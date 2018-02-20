@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+
+{% block container %}
+  <!-- <h1>Expense List</h1>
+  <ul class="list-group">
+    {% for data in datas %}
+      <li class="list-group-item">{{data.info}}</li>
+    {% endfor %}
+  </ul> -->
+
+  <h1>Dashboard</h1>
+  <hr>
+  <h3> Expense List </h3>
+  <table class="table table-striped">
+    <tr>
+      <th>ID</th>
+      <th>Info</th>
+      <th>Category</th>
+      <th>Amount</th>
+      <th>Date</th>
+    </tr>
+    {% for data in datas %}
+      <tr>
+        <td>{{data.id}}</td>
+        <td>{{data.info}}</td>
+        <td>{{data.category}}</td>
+        <td>{{data.amount}}</td>
+        <td>{{data.date}}</td>
+      </tr>
+    {% endfor %}
+  </table>
+  <a class="btn btn-success" href="/add_expense"> Add Expense</a>
+{% endblock %}
