@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 {% block container %}
 
-  <h1>Add Expense</h1>
+  <h1>{{title}} Expense</h1>
   {% from "helper/_formhelpers.html" import render_field %}
   <form method="POST" action="">
     <div class="form-group">
@@ -15,5 +15,5 @@
     </div>
     <p><input class="btn btn-primary" type="submit" value="Submit">
   </form>
-  
+
 {% endblock %}

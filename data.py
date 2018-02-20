@@ -39,7 +39,7 @@ data = [
 ]
 id = 6;
 
-def getData():
+def getDatas():
     return data;
 
 def addData(info,category,amount):
@@ -52,6 +52,35 @@ def addData(info,category,amount):
         'date':datetime.datetime.now().date()
     };
     id+=1;
+
+    data.append(expense);
+    return;
+
+def getData(id):
+    for data_i in data:
+        if(data_i['id']==id):
+            return data_i
+
+    return;
+
+def deleteData(id):
+    for data_i in data:
+        if(data_i['id']==id):
+            data.remove(data_i)
+            # print(data)
+            break
+
+    return;
+
+def changeData(id,info,category,amount):
+    deleteData(id)
+    expense = {
+        'id':id,
+        'category':category,
+        'info':info,
+        'amount':amount,
+        'date':datetime.datetime.now().date()
+    }
 
     data.append(expense);
     return;
