@@ -1,40 +1,44 @@
 import datetime
 
+color = ["","#bbdefb","#f0f4c3","#ffccbc","#e1bee7","#c8e6c9"]
+
+category = ["","Grocery","Entertainment","Vehicle","Food","miscellaneous"]
+
 data = [
     {
         'id':1,
         'category':1,
         'info':'big bazaar-grocery',
-        'amount':24,
-        'date':''
+        'amount':24.0,
+        'date':'2018-02-19'
     },
     {
         'id':2,
         'category':2,
         'info':'Movie - Entertainment',
-        'amount':21,
-        'date':''
+        'amount':21.0,
+        'date':'2018-02-20'
     },
     {
         'id':3,
         'category':3,
         'info':'Petrol - Vehicle',
-        'amount':15,
-        'date':''
+        'amount':15.0,
+        'date':'2018-02-18'
     },
     {
         'id':4,
         'category':4,
         'info':'leela rest - Vehicle',
-        'amount':93,
-        'date':''
+        'amount':93.0,
+        'date':'2018-01-01'
     },
     {
         'id':5,
         'category':5,
         'info':'stationery - miscellaneous',
-        'amount':61,
-        'date':''
+        'amount':61.0,
+        'date':'2018-01-05'
     }
 ]
 id = 6;
@@ -73,14 +77,14 @@ def deleteData(id):
     return;
 
 def changeData(id,info,category,amount):
-    deleteData(id)
+    oldData = getData(id)
     expense = {
         'id':id,
         'category':category,
         'info':info,
         'amount':amount,
-        'date':datetime.datetime.now().date()
+        'date':oldData['date']
     }
-
+    deleteData(id)
     data.append(expense);
     return;

@@ -8,35 +8,90 @@
     {% endfor %}
   </ul> -->
 
-  <h1>Dashboard</h1>
+  <h1> Dashboard </h1>
   <hr>
+  <div class="row">
+    <div class="col-xs-4">
+      <select name="carlist" form="carform" class="form-control">
+        <option value=0>All</option>
+        <option value=1>Grocery</option>
+        <option value=2>Entertainment</option>
+        <option value=3>Vehicle</option>
+        <option value=4>Food</option>
+        <option value=5>miscellaneous</option>
+      </select>
+    </div>
+    <div class="col-xs-6">
+      <div class="input-group">
+        <input type="date" id="datefield" class="form-control" name="start" />
+        <span class="input-group-addon">to</span>
+        <input type="date" id="datefield2" class="form-control" name="end" />
+      </div>
+    </div>
+    <div class="col-xs-2">
+      <button type="button" class="btn btn-default">Show</button>
+    </div>
+  </div>
   <h3> Expense List </h3>
-  <table class="table table-striped">
-    <tr>
-      <th>ID</th>
-      <th>Info</th>
-      <th>Category</th>
-      <th>Amount</th>
-      <th>Date</th>
-      <th></th>
-      <th></th>
-    </tr>
-    {% for data in datas %}
+  <br>
+  <input class="form-control" id="myInput" type="text" placeholder="Search..">
+  <table class="table">
+    <thead>
       <tr>
-        <td>{{data.id}}</td>
-        <td>{{data.info}}</td>
-        <td>{{data.category}}</td>
-        <td>{{data.amount}}</td>
-        <td>{{data.date}}</td>
-        <td><a href="edit_expense/{{data.id}}" class="btn btn-default pull-right">Edit</a></td>
-        <td>
-          <form method="POST" action="{{url_for('delete_expense', id=data.id)}}" >
-            <input type="hidden" name="_method" value="DELETE">
-            <input type="submit" value="Delete" class="btn btn-danger">
-          </form>
-        </td>
+        <th>ID</th>
+        <th>Info</th>
+        <th>Category</th>
+        <th>Amount</th>
+        <th>Date</th>
+        <th></th>
+        <th></th>
       </tr>
-    {% endfor %}
+    </thead>
+    <tbody id="myTable">
+      {% for data in datas %}
+        <tr bgcolor={{color[data.category]}}>
+          <td>{{data.id}}</td>
+          <td>{{data.info}}</td>
+          <td>{{category[data.category]}}</td>
+          <td>{{data.amount}}</td>
+          <td>{{data.date}}</td>
+          <td><a href="edit_expense/{{data.id}}" class="btn btn-default pull-right">Edit</a></td>
+          <td>
+            <form method="POST" action="{{url_for('delete_expense', id=data.id)}}" >
+              <input type="hidden" name="_method" value="DELETE">
+              <input type="submit" value="Delete" class="btn btn-danger">
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
   </table>
   <a class="btn btn-success" href="/add_expense"> Add Expense</a>
+{% endblock %}
+
+{% block script %}
+
+  var today = new Date();
+  var dd = today.getDate();
+  var mm = today.getMonth()+1; //January is 0!
+  var yyyy = today.getFullYear();
+  if(dd<10){
+    dd='0'+dd
+  }
+  if(mm<10){
+    mm='0'+mm
+  }
+  today = yyyy+'-'+mm+'-'+dd;
+  document.getElementById("datefield").setAttribute("max", today);
+  document.getElementById("datefield2").setAttribute("max", today);
+
+  $(document).ready(function(){
+    $("#myInput").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#myTable tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+
 {% endblock %}

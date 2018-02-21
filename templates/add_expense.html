@@ -7,11 +7,15 @@
     <div class="form-group">
       {{ render_field(form.info, class="form-control") }}
     </div>
-    <div class="form-group">
-      {{ render_field(form.category, class="form-control") }}
-    </div>
-    <div class="form-group">
-      {{ render_field(form.amount, class="form-control") }}
+    <div class="row">
+        <div class="col-xs-6">
+          <div class="form-group">
+            {{ render_field(form.category, class="form-control") }}
+          </div>
+        </div>
+        <div class="col-xs-6">
+            {{ render_field(form.amount, class="form-control") }}
+        </div>
     </div>
     <p><input class="btn btn-primary" type="submit" value="Submit">
   </form>

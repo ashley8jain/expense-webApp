@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
-from wtforms import Form, StringField, validators, IntegerField
+from wtforms import Form, StringField, validators, IntegerField, SelectField, FloatField
 import data
+
 app = Flask(__name__)
 
 datas = data.getDatas();
@@ -11,7 +12,7 @@ def index():
 
 @app.route('/home')
 def home():
-    return render_template('home.html',datas = datas)
+    return render_template('home.html',datas = datas,color = data.color,category = data.category)
 
 
 
@@ -23,6 +24,8 @@ def add_expense():
         info = form.info.data
         category = form.category.data
         amount = form.amount.data
+        # category = request.form['category']
+        # print(category)
         data.addData(info, category, amount)
         return redirect(url_for('home'))
 
@@ -40,7 +43,7 @@ def edit_expense(id):
     form.amount.data = data_i['amount']
     if request.method == 'POST' and form.validate():
         info = request.form['info']
-        category = request.form['category']
+        category = int(request.form['category'])
         amount = request.form['amount']
         data.changeData(id, info, category, amount)
         return redirect(url_for('home'))
@@ -49,8 +52,12 @@ def edit_expense(id):
 
 class expenseForm(Form):
     info = StringField('Info', [validators.Length(min=1)])
-    category = IntegerField('Categry')
-    amount = IntegerField('Amount')
+    category = SelectField(
+        'Category',
+        coerce=int,
+        choices=[(1, 'Grocery'), (2, 'Entertainment'), (3, 'Vehicle'),(4, 'Food'),(5, 'miscellaneous')]
+    )
+    amount = FloatField('Amount')
 
 
 
