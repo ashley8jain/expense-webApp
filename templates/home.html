@@ -12,13 +12,13 @@
   <hr>
   <div class="row">
     <div class="col-xs-4">
-      <select id="filter_category" name="carlist" form="carform" class="form-control">
-        <option value=0>All</option>
-        <option value=1>Grocery</option>
-        <option value=2>Entertainment</option>
-        <option value=3>Vehicle</option>
-        <option value=4>Food</option>
-        <option value=5>miscellaneous</option>
+      <select id="filter_category" name="filter_category" onchange="categoryFilter()" class="form-control">
+        <option value="all">All</option>
+        <option value="Grocery">Grocery</option>
+        <option value="Entertainment">Entertainment</option>
+        <option value="Vehicle">Vehicle</option>
+        <option value="Food">Food</option>
+        <option value="miscellaneous">miscellaneous</option>
       </select>
     </div>
     <div class="col-xs-6">
@@ -29,12 +29,12 @@
       </div>
     </div>
     <div class="col-xs-2">
-      <button type="button" class="btn btn-default">Show</button>
+      <button onclick="dateFilter()" type="button" class="btn btn-primary">Show</button>
     </div>
   </div>
   <h3> Expense List </h3>
   <br>
-  <input class="form-control" id="myInput" type="text" placeholder="Search..">
+  <input class="form-control" id="myInput" onkeyup="filterTable()" type="text" placeholder="Search...">
   <table class="table">
     <thead>
       <tr>
@@ -47,14 +47,14 @@
         <th></th>
       </tr>
     </thead>
-    <tbody id="myTable">
+    <tbody id="expenseTable">
       {% for data in datas %}
         <tr bgcolor={{color[data.category]}}>
           <td>{{data.id}}</td>
           <td>{{data.info}}</td>
-          <td>{{category[data.category]}}</td>
+          <td class="catg">{{category[data.category]}}</td>
           <td>{{data.amount}}</td>
-          <td>{{data.date_created}}</td>
+          <td class="datee">{{data.date_created}}</td>
           <td><a href="edit_expense/{{data.id}}" class="btn btn-default pull-right">Edit</a></td>
           <td>
             <form method="POST" action="{{url_for('delete_expense', id=data.id)}}" >
@@ -85,13 +85,45 @@
   document.getElementById("datefield").setAttribute("max", today);
   document.getElementById("datefield2").setAttribute("max", today);
 
-  $(document).ready(function(){
-    $("#myInput").on("keyup", function() {
-      var value = $(this).val().toLowerCase();
-      $("#myTable tr").filter(function() {
-        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-      });
+  function filterTable(){
+    var value = $("#myInput").val().toLowerCase();
+    $("#expenseTable tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
-  });
+  }
+
+  function categoryFilter(){
+      var value = $("#filter_category").val();
+      if(value=="all"){
+        $("#expenseTable tr").show();
+      }
+      else{
+        $("#expenseTable tr").filter(function() {
+          $(this).toggle($(this).children('td.catg').text().indexOf(value) > -1)
+        });
+      }
+  }
+
+  function dateFilter() {
+    if( $("#datefield").val().length != 0 && $("#datefield2").val().length != 0){
+
+      var startDt = Date.parse($("#datefield").val())
+      var endDt = Date.parse($("#datefield2").val())
+
+      if(startDt <= endDt){
+        $("#expenseTable tr").filter(function() {
+          var datee = Date.parse($(this).children('td.datee').text())
+          $(this).toggle(datee>=Date.parse($("#datefield").val()) && datee<=Date.parse($("#datefield2").val()))
+        });
+      }
+      else{
+        alert("Start date should be before end date !!!")
+      }
+    }
+    else{
+      $("#expenseTable tr").show();
+    }
+  }
+
 
 {% endblock %}
