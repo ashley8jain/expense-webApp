@@ -12,7 +12,7 @@
   <hr>
   <div class="row">
     <div class="col-xs-4">
-      <select name="carlist" form="carform" class="form-control">
+      <select id="filter_category" name="carlist" form="carform" class="form-control">
         <option value=0>All</option>
         <option value=1>Grocery</option>
         <option value=2>Entertainment</option>
@@ -54,7 +54,7 @@
           <td>{{data.info}}</td>
           <td>{{category[data.category]}}</td>
           <td>{{data.amount}}</td>
-          <td>{{data.date}}</td>
+          <td>{{data.date_created}}</td>
           <td><a href="edit_expense/{{data.id}}" class="btn btn-default pull-right">Edit</a></td>
           <td>
             <form method="POST" action="{{url_for('delete_expense', id=data.id)}}" >

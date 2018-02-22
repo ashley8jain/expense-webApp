@@ -1,10 +1,22 @@
 from flask import Flask, render_template, request, redirect, url_for
 from wtforms import Form, StringField, validators, IntegerField, SelectField, FloatField
+from flask_mysqldb import MySQL
 import data
 
 app = Flask(__name__)
 
-datas = data.getDatas();
+#config MySQL
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'root'
+app.config['MYSQL_DB'] = 'expense'
+app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
+mysql = MySQL(app)
+
+# datas = data.getDatas();
+
+
+
 
 @app.route('/')
 def index():
@@ -12,6 +24,10 @@ def index():
 
 @app.route('/home')
 def home():
+    cur = mysql.connection.cursor()
+    result = cur.execute("SELECT * FROM expense")
+    datas = cur.fetchall()
+    cur.close()
     return render_template('home.html',datas = datas,color = data.color,category = data.category)
 
 
@@ -24,8 +40,6 @@ def add_expense():
         info = form.info.data
         category = form.category.data
         amount = form.amount.data
-        # category = request.form['category']
-        # print(category)
         data.addData(info, category, amount)
         return redirect(url_for('home'))
 
