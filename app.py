@@ -77,7 +77,7 @@ def edit_expense(id):
     if request.method == 'POST' and form.validate():
         info = request.form['info']
         category = int(request.form['category'])
-        amount = request.form['amount']
+        amount = float(request.form['amount'])
         data.changeData(id, info, category, amount)
         flash('Expense updated', 'success')
         return redirect(url_for('home'))
