@@ -1,5 +1,39 @@
 {% extends 'layout.html' %}
 
+{% block style %}
+  .bodyy{
+  }
+
+  .filter-panel{
+    padding:15px;
+  }
+
+	.panel-heading div {
+		margin-top: -25px;
+	}
+
+  .btn-circle {
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    padding: 6px 0;
+    font-size: 12px;
+    line-height: 1.428571429;
+    border-radius: 15px;
+  }
+
+  .center {
+    margin: auto;
+  }
+
+  @media(max-width: 750px){
+    .filter-title {
+        display: none;
+    }
+  }
+
+{% endblock %}
+
 {% block container %}
   <!-- <h1>Expense List</h1>
   <ul class="list-group">
@@ -7,11 +41,14 @@
       <li class="list-group-item">{{data.info}}</li>
     {% endfor %}
   </ul> -->
-
-  <h1> Dashboard </h1>
-  <hr>
-  <div class="row">
-    <div class="col-xs-4">
+<div class="container-fluid">
+  <div class="row bodyy">
+    <div class="col-sm-2 filter-panel">
+      <div class="filter-title">
+        <h4>Filter Expenses</h4>
+        <hr>
+      </div>
+      <p>Category:<p>
       <select id="filter_category" name="filter_category" onchange="categoryFilter()" class="form-control">
         <option value="all">All</option>
         <option value="Grocery">Grocery</option>
@@ -20,53 +57,68 @@
         <option value="Food">Food</option>
         <option value="miscellaneous">miscellaneous</option>
       </select>
-    </div>
-    <div class="col-xs-6">
-      <div class="input-group">
-        <input type="date" id="datefield" class="form-control" name="start" />
-        <span class="input-group-addon">to</span>
-        <input type="date" id="datefield2" class="form-control" name="end" />
-      </div>
-    </div>
-    <div class="col-xs-2">
+      <p>From:</p>
+      <input type="date" id="datefield" class="form-control" name="start" />
+      <p>To:</p>
+      <input type="date" id="datefield2" class="form-control" name="end" />
+      <br>
       <button onclick="dateFilter()" type="button" class="btn btn-primary">Show</button>
     </div>
+
+    <div class="col-sm-6">
+      <div class="panel panel-primary">
+      	<div class="panel-heading">
+      		<h3 class="panel-title">Expense List</h3>
+          <div class="pull-right">
+						<span class="clickable filter">
+              <a class="btn btn-danger btn-circle" href="/add_expense"><i class="glyphicon glyphicon-plus"></i></a>
+						</span>
+					</div>
+      	</div>
+      	<div class="panel-body">
+      		<input class="form-control" id="myInput" onkeyup="filterTable()" type="text" placeholder="Search...">
+      	</div>
+        <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Info</th>
+              <th>Category</th>
+              <th>Amount</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="expenseTable">
+            {% for data in datas %}
+              <tr bgcolor={{color[data.category]}}>
+                <td class="datee">{{data.date_created}}</td>
+                <td>{{data.info}}</td>
+                <td class="catg">{{category[data.category]}}</td>
+                <td>{{data.amount}}</td>
+                <td><a href="edit_expense/{{data.id}}" class="btn btn-default pull-right">Edit</a></td>
+                <td>
+                  <form method="POST" action="{{url_for('delete_expense', id=data.id)}}" >
+                    <input type="hidden" name="_method" value="DELETE">
+                    <input type="submit" value="Delete" class="btn btn-danger">
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4 filter-panel">
+      <h4>Last 12 Months</h4>
+      <hr>
+      <canvas id="bar-chart" width="500" height="400"></canvas>
+    <div>
   </div>
-  <h3> Expense List </h3>
-  <br>
-  <input class="form-control" id="myInput" onkeyup="filterTable()" type="text" placeholder="Search...">
-  <table class="table">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Info</th>
-        <th>Category</th>
-        <th>Amount</th>
-        <th>Date</th>
-        <th></th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody id="expenseTable">
-      {% for data in datas %}
-        <tr bgcolor={{color[data.category]}}>
-          <td>{{data.id}}</td>
-          <td>{{data.info}}</td>
-          <td class="catg">{{category[data.category]}}</td>
-          <td>{{data.amount}}</td>
-          <td class="datee">{{data.date_created}}</td>
-          <td><a href="edit_expense/{{data.id}}" class="btn btn-default pull-right">Edit</a></td>
-          <td>
-            <form method="POST" action="{{url_for('delete_expense', id=data.id)}}" >
-              <input type="hidden" name="_method" value="DELETE">
-              <input type="submit" value="Delete" class="btn btn-danger">
-            </form>
-          </td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  <a class="btn btn-success" href="/add_expense"> Add Expense</a>
+</div>
+
 {% endblock %}
 
 {% block script %}
@@ -124,6 +176,45 @@
       $("#expenseTable tr").show();
     }
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+  var barChart = new Chart(document.getElementById("bar-chart"), {
+    type: 'horizontalBar',
+    data: {
+      labels : [{% for item in labels %}
+                 "{{item}}",
+                {% endfor %}],
+      datasets : [{
+          label: '{{ legend }}',
+          backgroundColor: ["rgba(244,67,54,0.4)","rgba(33,150,243,0.4)","rgba(255,235,59,0.4)","rgba(255,87,34,0.4)","rgba(139,195,74,0.4)","rgba(103,58,183,0.4)","rgba(244,67,54,0.4)","rgba(33,150,243,0.4)","rgba(255,235,59,0.4)","rgba(255,87,34,0.4)","rgba(139,195,74,0.4)","rgba(103,58,183,0.4)","rgba(244,67,54,0.4)","rgba(33,150,243,0.4)","rgba(255,235,59,0.4)","rgba(255,87,34,0.4)","rgba(139,195,74,0.4)","rgba(103,58,183,0.4)","rgba(244,67,54,0.4)","rgba(33,150,243,0.4)","rgba(255,235,59,0.4)","rgba(255,87,34,0.4)","rgba(139,195,74,0.4)","rgba(103,58,183,0.4)","rgba(244,67,54,0.4)","rgba(33,150,243,0.4)","rgba(255,235,59,0.4)","rgba(255,87,34,0.4)","rgba(139,195,74,0.4)","rgba(103,58,183,0.4)","rgba(244,67,54,0.4)","rgba(33,150,243,0.4)","rgba(255,235,59,0.4)","rgba(255,87,34,0.4)","rgba(139,195,74,0.4)","rgba(103,58,183,0.4)","rgba(244,67,54,0.4)","rgba(33,150,243,0.4)","rgba(255,235,59,0.4)","rgba(255,87,34,0.4)","rgba(139,195,74,0.4)","rgba(103,58,183,0.4)","rgba(244,67,54,0.4)","rgba(33,150,243,0.4)","rgba(255,235,59,0.4)","rgba(255,87,34,0.4)","rgba(139,195,74,0.4)","rgba(103,58,183,0.4)","rgba(244,67,54,0.4)","rgba(33,150,243,0.4)","rgba(255,235,59,0.4)","rgba(255,87,34,0.4)","rgba(139,195,74,0.4)","rgba(103,58,183,0.4)"],
+          borderColor: "rgba(75,192,192,1)",
+          data : [{% for item in values %}
+                    {{item}},
+                  {% endfor %}]
+      }]
+    },
+    options: {
+      legend: { display: false },
+      title: {
+        display: true,
+        text: 'Monthly'
+      }
+    }
+  });
+
+
+
 
 
 {% endblock %}

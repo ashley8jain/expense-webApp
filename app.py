@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, flash, request, redirect, url_for
 from wtforms import Form, StringField, validators, IntegerField, SelectField, FloatField
 from flask_mysqldb import MySQL
 import data
@@ -28,7 +28,25 @@ def home():
     result = cur.execute("SELECT * FROM expense")
     datas = cur.fetchall()
     cur.close()
-    return render_template('home.html',datas = datas,color = data.color,category = data.category)
+    mapp = dict()
+    for dataa in datas:
+        timee = str(dataa['date_created'])[2:7]
+        if timee in mapp:
+            mapp[timee]+=dataa['amount']
+        else:
+            mapp[timee]=dataa['amount']
+
+    legend = 'total $'
+    labels = []
+    values = []
+    for key in sorted(mapp,reverse=True):
+        labels.append(key)
+        values.append(mapp[key])
+
+
+    # labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nove", "Dec"]
+    # values = [10, 9, 8, 7, 6, 4, 7, 8, 10, 9, 8, 7]
+    return render_template('home.html',datas = datas,color = data.color,category = data.category, values=values, labels=labels, legend=legend)
 
 
 
@@ -41,6 +59,7 @@ def add_expense():
         category = form.category.data
         amount = form.amount.data
         data.addData(info, category, amount)
+        flash('Expense added', 'success')
         return redirect(url_for('home'))
 
     return render_template('add_expense.html', form=form, title='Add')
@@ -60,6 +79,7 @@ def edit_expense(id):
         category = int(request.form['category'])
         amount = request.form['amount']
         data.changeData(id, info, category, amount)
+        flash('Expense updated', 'success')
         return redirect(url_for('home'))
 
     return render_template('add_expense.html', form=form, title='Edit')
@@ -80,7 +100,8 @@ class expenseForm(Form):
 #delete Expense
 @app.route('/delete_expense/<int:id>', methods=['POST'])
 def delete_expense(id):
-    data.deleteData(id);
+    data.deleteData(id)
+    flash('Expense deleted', 'success')
     return redirect(url_for('home'))
 
 
@@ -88,4 +109,5 @@ def delete_expense(id):
 
 
 if __name__ == '__main__':
+    app.secret_key='123abc'
     app.run(debug=True)
